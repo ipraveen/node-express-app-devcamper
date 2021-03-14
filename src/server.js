@@ -4,7 +4,7 @@ const bootcampRoutes = require('./routes/bootcampRoutes');
 const logger = require('./middlewares/logger');
 const connectDB = require('./config/db.js');
 const colors = require('colors');
-const errorhandler = require('./middlewares/errors');
+const restErrorMiddleware = require('./middlewares/restErrorMiddleware');
 
 const envConfig = dotenv.config({ path: './src/config/config.env' });
 if (envConfig.error) {
@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json()); // Covert payload to Json
 app.use(logger); // log it
 app.use('/api/v1/bootcamps', bootcampRoutes); // handle requests
-app.use(errorhandler); // catch any errors.
+app.use(restErrorMiddleware); // catch any errors.
 
 const PORT = process.env.PORT;
 const server = app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold));

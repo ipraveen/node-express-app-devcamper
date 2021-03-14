@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Bootcamp = require('../models/Bootcamp');
+const RestError = require('../utils/RestError');
+const appError = require('../config/appError');
+const MongoDBError = require('../utils/MongoDBError');
 
 router.get('/', async (req, res) => {
     try {
@@ -19,24 +22,21 @@ router.get('/:id', async (req, res, next) => {
         const bootcamp = await Bootcamp.findById(req.params.id);
 
         if (!bootcamp) {
-            return res.status(400).json({ status: 'FAILED' });
+            next(new MongoDBError({ name: 'ResourceNotFound' }));
         }
 
         res.json({ success: true, data: bootcamp });
     } catch (error) {
-        next(error);
+        next(new MongoDBError(error));
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
-        console.log('>>>>:', req.body);
         const bootcamp = await Bootcamp.create(req.body);
         res.json({ success: true, data: bootcamp });
     } catch (error) {
-        res.status(400).json({
-            status: 'failed',
-        });
+        next(new MongoDBError(error));
     }
 });
 
